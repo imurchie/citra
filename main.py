@@ -6,6 +6,8 @@
 # 
 
 import sys
+import codecs
+
 import gomutrika
 
 
@@ -17,7 +19,8 @@ import gomutrika
 figure = 'gomutrika'
 try:
 	if figure == 'gomutrika':
-		file = open('./data/gomutrika_test.txt', 'r')
+		file = codecs.open('./data/gomutrika_test.txt', encoding='utf-8')
+		#file = open('./data/gomutrika_test.txt', 'r')
 		verses = gomutrika.identifyGomutrika(file)
 	else:
 		print 'No other figure implemented yet.'
@@ -26,4 +29,4 @@ except IOError, io:
 	print "There was an error reading file: " + str(io)
 	sys.exit(1)
 
-print verses
+print 'Found Verses: ', verses
