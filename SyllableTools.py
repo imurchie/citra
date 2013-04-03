@@ -44,7 +44,10 @@ def getNextSyllable(line):
 	while len(line) > 0:
 		letter = line[0]
 		
-		if isVowel(letter):
+		if letter == ' ':
+			# do nothing
+			letter = ' '
+		elif isVowel(letter):
 			vowel = True
 			syllable = syllable + letter
 		elif vowel == False:
@@ -73,6 +76,10 @@ def getNextSyllable(line):
 # output:	syllables as list
 def parseSyllables(line):
 	syllables = []
+	
+	# for now we're just stripping off the daṇḍas
+	line = line.rstrip('|')
+	
 	while len(line) > 0:
 		temp = getNextSyllable(line)
 		syllable = temp[0]
