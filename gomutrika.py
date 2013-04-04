@@ -6,35 +6,35 @@
 import SyllableTools
 
 
-# a verse is gomūtrikā if even syllables match
-def isGomutrika(firstline, secondline):
-	count =len(firstline)
-	print count, ' + ', len(secondline)
-	for i in xrange(count):
-		if  i % 2 == 0:
-			print firstline[i] + ' : ' + secondline[i]
+# a verse is gomūtrikā if even syllables match, or odd syllables match
+#
+# input:		firstline as list of syllables
+#					secondline as list of syllables
+#					even as Boolean (True if searching even syllables, False if odd
+# ouput:		Boolean, True if syllables are equal, False otherwise.
+def isGomutrikaInternal(firstline, secondline, even):
+	if len(firstline) != len(secondline):
+		return False
+	
+	# go through the syllables and compare them
+	for i in xrange(len(firstline)):
+		if  (even == True and i % 2 == 0) or (even == False and i % 2 != 0):
 			if firstline[i] != secondline[i]:
 				return False
 	return True
 
-# input: 		File object
-# output: 
-def identifyGomutrika(file):
-	verses = dict()	# this will have the verse number and the line ( I think)
-	syl1 = []	# syllables in first line
-	syl2 = []	# syllables in second line
-	for line in file:
-		line = line.rstrip()
-		if len(syl1) == 0:
-			syl1 = SyllableTools.parseSyllables(line)
-		elif len(syl2) == 0:
-			syl2 = SyllableTools.parseSyllables(line)
-		else:
-			# both lists are full, so we have a complete verse
-			print 'Gomūtrikā? ', isGomutrika(syl1, syl2)
-			
-			# last thing to do is empty the lists
-			syl1 = []
-			syl2 = []
+
+
+# input: 		Verse as tuple (identifier, Pada ab, Pada cd)
+# output: 	Boolean 
+def isGomutrika(verse):
+	if verse[1]  == None or verse[2] == None:
+		print "Something is wrong: ", verse
+		return
+		
+	syl1 = SyllableTools.parseSyllables(verse[1])
+	syl2 = SyllableTools.parseSyllables(verse[2])
 	
-	return verses
+	if isGomutrikaInternal(syl1, syl2, True) or isGomutrikaInternal(syl1, syl2, False):
+		print 'GOMŪTRIKĀ: ', verse
+		return True

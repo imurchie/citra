@@ -1,6 +1,32 @@
-adīnavadanāmbhojamadanopāsitāmbaraḥ |
-anūnagadasambhogamatanodasitāmbaraḥ ||
 
-senāparyastanārācacakrāsārājitāsurā |
-rājarājasya dānāmbuviṣyandikaṭakuñjarā ||
-	
+
+Bharavi: Kiratarjuniya
+
+Text follows that commented on by Mallinaatha, also as regards e.g., worddivision;
+note that there are often other possible worddivisions (especially in the citraverses
+of sarga 15) and quite a few variants in the texts of other commentators.
+
+
+Input by Harunaga Isaacson.
+
+
+
+PLAIN TEXT VERSION
+
+
+
+
+THIS TEXT FILE IS FOR REFERENCE PURPOSES ONLY! 
+COPYRIGHT AND TERMS OF USAGE AS FOR SOURCE FILE. 
+ 
+śriyaḥ kurūṇām adhipasya pālanīṃ prajāsu vṛttiṃ yam ayuṅkta veditum /
+sa varṇiliṅgī viditaḥ samāyayau yudhiṣṭhiraṃ dvaitavane vanecaraḥ // BhKir_1.1 //
+
+kṛtapraṇāmasya mahīṃ mahībhuje jitāṃ sapatnena nivedayiṣyataḥ /
+na vivyathe tasya mano na hi priyaṃ pravaktum icchanti mṛṣā hitaiṣiṇaḥ // BhKir_1.2 //
+
+dviṣāṃ vighātāya vidhātum icchato rahasy anujñām adhigamya bhūbhṛtaḥ /
+sa sauṣṭhavaudāryaviśeṣaśālinīṃ viniścitārthām iti vācam ādadhe // BhKir_1.3 //
+
+kriyāsu yuktair nṛpa cāracakṣuṣo na vañcanīyāḥ prabhavo 'nujīvibhiḥ /
+ato 'rhasi kṣantum asādhu sādhu vā hitaṃ manohāri ca durlabhaṃ vacaḥ // BhKir_1.4 //
