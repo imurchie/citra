@@ -38,28 +38,39 @@ def logWrite(log, verse):
 # for the moment, hard-code for "gomutrika" (which is the only one being worked on)
 figure = 'gomutrika'
 try:
+	#file = codecs.open('./data/gomutrika_test.txt', encoding='utf-8')
+	#file = codecs.open('./data/Kirātārjunīya.txt', encoding='utf-8')
+	file = codecs.open('./data/Kumārasaṃbhava.txt', encoding='utf-8')
+		
+	log = codecs.open('./log.txt', 'w', encoding='utf-8')
+	
+	
+	# get the correct function to call
+	function = None
 	if figure == 'gomutrika':
-		#file = codecs.open('./data/gomutrika_test.txt', encoding='utf-8')
-		file = codecs.open('./data/Kirātārjunīya.txt', encoding='utf-8')
-		
-		log = codecs.open('./log.txt', 'w', encoding='utf-8')
-		
-		try:
-			count_gm = 0
-			count_vs = 0
-			while file:
-				verse = VerseTools.parseVerse(file)
-				count_vs += 1
-				logWrite(log, verse)
-				
-				gm = gomutrika.isGomutrika(verse)
-				if gm:
-					count_gm += 1
-		except StopIteration, si:
-			print 'We\'re done: ', count_gm, 'gomūtrikā figure(s) in', count_vs, 'verses.'
+		function = gomutrika.isGomutrika
 	else:
 		print 'No other figure implemented yet.'
 		sys.exit(1)
+	
+	# process the file
+	verses = []
+	try:
+		count_figure = 0
+		count_verse = 0
+		while file:
+			verse = VerseTools.parseVerse(file)
+			count_verse += 1
+			logWrite(log, verse)
+			
+			figure = function(verse)
+			if figure:
+				count_figure += 1
+				verses.append(verse)
+	except StopIteration, si:
+		print 'We\'re done: ', count_figure, 'figure(s) in', count_verse, 'verses.'
 except IOError, io:
 	print 'There was an error reading file: ' + str(io)
 	sys.exit(1)
+
+print 'Verses: ', verses
