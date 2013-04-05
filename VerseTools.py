@@ -27,7 +27,13 @@ def getIdentifier(line, identifier):
 def isSanskritLine(line):
 	delim = re.search('[\|\/]', line)
 	
-	return delim != None
+	# however, many files, especially from GRETIL, have a url in the preface
+	# luckily 'www' is NEVER a valid Sanskrit sequence
+	try:
+		line.index('www')
+		return False
+	except ValueError, ve:
+		return delim != None
 
 
 
@@ -57,10 +63,7 @@ def parseVerse(file):
 			line = line.rstrip()
 			line = line.strip()
 
-			print 'l: ', line
-
 			if line != None and len(line) != 0:
-				print '    processing...'
 				# at this point I am going to assume that a Sanskrit line will have a '|' or '/'
 				# the problem is arbitrary information before the actual text begins in an etext
 				if isSanskritLine(line):
