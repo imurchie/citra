@@ -4,6 +4,7 @@
 # template for find possible instances of the gomūtrikā ('cow-piss') formation in Sanskrit literature
 
 import SyllableTools
+from VerseTools import Verse
 
 
 # a verse is gomūtrikā if even syllables match, or odd syllables match
@@ -28,12 +29,14 @@ def isGomutrikaInternal(firstline, secondline, even):
 # input: 		Verse as tuple (identifier, Pada ab, Pada cd)
 # output: 	Boolean 
 def isGomutrika(verse):
-	if verse[1]  == None or verse[2] == None:
-		print "Something is wrong: ", verse
-		return
-		
-	syl1 = SyllableTools.parseSyllables(verse[1])
-	syl2 = SyllableTools.parseSyllables(verse[2])
+	#if verse[1]  == None or verse[2] == None:
+	#	print "Something is wrong: ", verse
+	#	return
+	
+	#syl1 = SyllableTools.parseSyllables(verse.getPada(Verse.A) + verse.getPada(Verse.B))
+	#syl2 = SyllableTools.parseSyllables(verse.getPada(Verse.C) + verse.getPada(Verse.D))
+	syl1 = verse.getPada(Verse.A) + verse.getPada(Verse.B)
+	syl2 = verse.getPada(Verse.C) + verse.getPada(Verse.D)
 	
 	if isGomutrikaInternal(syl1, syl2, True) or isGomutrikaInternal(syl1, syl2, False):
 		print 'GOMŪTRIKĀ: ', verse
