@@ -30,28 +30,35 @@ class Verse:
 	def __init__(self, verse_id):
 		self.id = verse_id
 	
-	# can take strings or lists of syllables
-	# stores them as lists of syllables
-	def __init__(self, verse_id, pada_a, pada_b, pada_c, pada_d):
+	
+	# it is difficult to split a half-verse into two quarters
+	# with just a string
+	# input: verse_id as String
+	#				pada_ab, pada_cd as Strings
+	def __init__(self, verse_id, pada_ab, pada_cd):
 		self.id = verse_id
 		
-		# need to add error handling
-		if type(pada_a) is UnicodeType:
-			self.pada_a = parseSyllables(pada_a)
-		elif type(pada_a) is ListType:
-			self.pada_a = pada_a
-		if type(pada_b) is UnicodeType:
-			self.pada_b = parseSyllables(pada_b)
-		elif type(pada_b) is ListType:
-			self.pada_b = pada_b
-		if type(pada_c) is UnicodeType:
-			self.pada_c = parseSyllables(pada_c)
-		elif type(pada_c) is ListType:
-			self.pada_c = pada_c
-		if type(pada_d) is UnicodeType:
-			self.pada_d = parseSyllables(pada_d)
-		elif type(pada_d) is ListType:
-			self.pada_d = pada_d
+		if type(pada_ab) is UnicodeType:
+			ab = parseSyllables(pada_ab)
+		elif type(pada_ab) is ListType:
+			ab = pada_ab
+		else:
+			raise ValueException('First half of verse of wrong type (\'' + str(type(pada_ab)) + '\')')
+		if type(pada_cd) is UnicodeType:
+			cd = parseSyllables(pada_cd)
+		elif type(pada_cd) is ListType:
+			cd = pada_cd
+		else:
+			raise ValueException('Second half of verse of wrong type (\'' + str(type(pada_cd)) + '\')')
+		
+		half_length = len(ab)
+		quarter_length = half_length / 2
+		
+		self.pada_a = ab[0:quarter_length]
+		self.pada_b = ab[quarter_length:half_length]
+		self.pada_c = cd[0:quarter_length]
+		self.pada_d = cd[quarter_length:half_length]
+	
 		
 	def getId(self):
 		if self.id == None:
@@ -75,9 +82,12 @@ class Verse:
 		return verse
 	
 	def getVerseString(self):
-		verse = self.getVerse()
-		
-		return str(verse)
+		verse_string = self.getId() + '\n'
+		verse_string += self.getPadaString(Verse.A) + '\n'
+		verse_string += self.getPadaString(Verse.B) + '\n'
+		verse_string += self.getPadaString(Verse.C) + '\n'
+		verse_string += self.getPadaString(Verse.D) + '\n'
+		return verse_string
 	
 	
 	def getPada(self, pada_name):
@@ -157,10 +167,7 @@ def getText(line):
 
 # Expects a file opened as a Unicode stream
 # Verses are taken to be two lines long, with verses separated by spaces
-# Return:	a tuple
-#						identifier (as string, format at the moment varies)
-#						First half of verse
-#						Second half of verse
+# Return:	Verse object
 def parseVerse(file):
 	identifier = None
 	pada_ab = None
@@ -183,7 +190,7 @@ def parseVerse(file):
 						elif pada_cd == None:
 							pada_cd = text
 						else:
-							# oops. The line is not empty but  we have two lines already
+							# oops. The line is not empty but we have two lines already
 							# we need to adjust in order to account for multi-line verses
 							if len(text) != 0:
 								print 'Verse too long: (', identifier, ') ', text
@@ -199,25 +206,11 @@ def parseVerse(file):
 		if pada_ab == None and pada_cd == None:
 			raise StopIteration('End')
 		
-		print pada_ab
-		print pada_cd
-		
-		half_length = len(pada_ab)
-		quarter_length = half_length / 2
-		
-		pada_a = pada_ab[0:quarter_length]
-		pada_b = pada_ab[quarter_length:half_length]
-		pada_c = pada_cd[0:quarter_length]
-		pada_d = pada_cd[quarter_length:half_length]
+		print 'ab: ', pada_ab
+		print 'cd: ', pada_cd
 		
 		# now assemble the result and pass it back
-		#return (identifier, pada_ab, pada_cd)
-		print identifier
-		print '    ', pada_a
-		print '    ', pada_b
-		print '    ', pada_c
-		print '    ', pada_d
-		return  Verse(identifier, pada_a, pada_b, pada_c, pada_d)
+		return  Verse(identifier, pada_ab, pada_cd)
 	except IOError, io:
 		print 'IOError reading file', io
 		sys.exit(1)
