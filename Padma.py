@@ -18,10 +18,10 @@ def isPadma(verse):
 	#half_length = len(pada_ab)
 	#quarter_length = half_length / 2
 	
-	pada_a = verse.getPada(Verse.A) #parseSyllables(verse.getPada(Verse.A))#pada_ab[0:quarter_length]
-	pada_b = verse.getPada(Verse.B) #parseSyllables(verse.getPada(Verse.B))#pada_ab[quarter_length:half_length]
-	pada_c = verse.getPada(Verse.C) #parseSyllables(verse.getPada(Verse.C))#pada_cd[0:quarter_length]
-	pada_d = verse.getPada(Verse.D) #parseSyllables(verse.getPada(Verse.D))#pada_cd[quarter_length:half_length]
+	pada_a = verse.getPada(Verse.A) 
+	pada_b = verse.getPada(Verse.B) 
+	pada_c = verse.getPada(Verse.C) 
+	pada_d = verse.getPada(Verse.D) 
 	
 	if pada_a[0] == pada_a[-1]\
 		and  pada_a[-1] == pada_b[0]\

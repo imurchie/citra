@@ -49,19 +49,21 @@ def getNextSyllable(line):
 			letter = ' '
 		elif isVowel(letter):
 			vowel = True
-			syllable = syllable + letter
+			syllable += letter
 		elif vowel == False:
 			# if we haven't found a vowel, whatever it is, it goes in the syllable
-			syllable = syllable + letter
+			syllable += letter
 		else:
 			# if we're here, we've already found a vowel, and what we have is NOT a vowel
 			# we want to put it in the syllable if it is a visarga or anusvāra
 			if isVisarga(letter):
-				syllable = syllable + letter
+				syllable += letter
+				line = line[1:len(line)]
 			elif isAnusvara(letter):
-				syllable = syllable + letter
-			else:
-				break
+				syllable += letter
+				line = line[1:len(line)]
+			#else:
+			break
 		
 		# take the letter off the line, as it is in the syllable
 		line = line[1:len(line)]
