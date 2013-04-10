@@ -26,9 +26,13 @@ class Verse:
 	C = 'pada_c'
 	D = 'pada_d'
 	
+	# for Iterator implementation
+	current = 0
+	
 	# initialize the object with an id
 	def __init__(self, verse_id):
 		self.id = verse_id
+		self.current = 0
 	
 	
 	# it is difficult to split a half-verse into two quarters
@@ -37,6 +41,7 @@ class Verse:
 	#				pada_ab, pada_cd as Strings
 	def __init__(self, verse_id, pada_ab, pada_cd):
 		self.id = verse_id
+		self.current = 0
 		
 		if type(pada_ab) is UnicodeType:
 			ab = parseSyllables(pada_ab)
@@ -125,6 +130,29 @@ class Verse:
 		return self.getPada(quarter)
 	def getQuarterString(self, quarter):
 		return self.getPadaString(quarter)
+	
+	
+	""" implement Iterator """
+	def __iter__(self):
+		return self
+
+	
+	def next(self):
+		if self.current == 4:		# there can only be four quarters
+			raise StopIteration
+		else:
+			pada = None
+			if self.current == 0:
+				pada = self.getPada(Verse.A)
+			elif self.current == 1:
+				pada = self.getPada(Verse.B)
+			elif self.current == 2:
+				pada = self.getPada(Verse.C)
+			elif self.current == 3:
+				pada = self.getPada(Verse.D)
+			self.current += 1
+            
+			return pada
 	
 
 
