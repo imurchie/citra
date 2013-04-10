@@ -139,6 +139,7 @@ class Verse:
 	
 	def next(self):
 		if self.current == 4:		# there can only be four quarters
+			self.current = 0			# reset so we can iterate multiple times if need be
 			raise StopIteration
 		else:
 			pada = None
