@@ -10,6 +10,7 @@ import codecs
 
 import gomutrika
 import Padma
+import Sarvatobhadra
 import VerseTools
 
 
@@ -17,7 +18,7 @@ import VerseTools
 
 
 # possible figures
-FIGURES = ['gomūtrikā', 'padma']
+FIGURES = ['gomūtrikā', 'padma', 'sarvatobhadra']
 
 
 def logWrite(log, verse):
@@ -41,6 +42,8 @@ def processRequest(figure, filename):
 			function = gomutrika.isGomutrika
 		elif figure == 'padma':
 			function = Padma.isPadma
+		elif figure == 'sarvatobhadra':
+			function = Sarvatobhadra.isSarvatobhadra
 		else:
 			print 'No other figure implemented yet.'
 			sys.exit(1)
