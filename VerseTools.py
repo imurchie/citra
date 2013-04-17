@@ -6,131 +6,45 @@
 # Main external function is 'parseVerse()', in which is encapsulated the means to
 # isolate a single verse from a file
 
-import sys
+import sys, io, codecs
 import re
 from types import *
 from SyllableTools import parseSyllables
 
 
-# Verse: a class to encapsulate a verse (which I've been using a tuple for to this point
-class Verse:
-	id = None
-	pada_a = None
-	pada_b = None
-	pada_c = None
-	pada_d = None
+"""
+Pada Class
+- Used in Verse
+"""
+class Pada(list):
+	_syllables = None
+	_current = None
 	
-	# pāda names
-	A = 'pada_a'
-	B = 'pada_b'
-	C = 'pada_c'
-	D = 'pada_d'
-	
-	# for Iterator implementation
-	current = 0
-	
-	# initialize the object with an id
-	def __init__(self, verse_id):
-		self.id = verse_id
-		self.current = 0
-	
-	
-	# it is difficult to split a half-verse into two quarters
-	# with just a string
-	# input: verse_id as String
-	#				pada_ab, pada_cd as Strings
-	def __init__(self, verse_id, pada_ab, pada_cd):
-		self.id = verse_id
-		self.current = 0
+	def __init__(self, pada):
+		self._syllables = []
+		self._current = -1
 		
-		if type(pada_ab) is UnicodeType:
-			ab = parseSyllables(pada_ab)
-		elif type(pada_ab) is ListType:
-			ab = pada_ab
+		# input can be a string, or a list of syllables
+		if isinstance(pada, UnicodeType):
+			self._syllables = parseSyllables(pada)
+		elif isinstance(pada, ListType):
+			# deep copy
+			for syllable in pada:
+				self._syllables.append(syllable)
 		else:
-			raise ValueException('First half of verse of wrong type (\'' + str(type(pada_ab)) + '\')')
-		if type(pada_cd) is UnicodeType:
-			cd = parseSyllables(pada_cd)
-		elif type(pada_cd) is ListType:
-			cd = pada_cd
-		else:
-			raise ValueException('Second half of verse of wrong type (\'' + str(type(pada_cd)) + '\')')
+			raise ValueError('Pada should be string or list of syllables: ' + str(type(pada)))
+	
+	def __str__(self):
+		return unicode(self).encode('utf-8')
+	
+	def __unicode__(self):
+		string = u''
+		for syllable in self._syllables:
+			string += syllable
+		return string
 		
-		half_length = len(ab)
-		quarter_length = half_length / 2
-		
-		self.pada_a = ab[0:quarter_length]
-		self.pada_b = ab[quarter_length:half_length]
-		self.pada_c = cd[0:quarter_length]
-		self.pada_d = cd[quarter_length:half_length]
-	
-		
-	def getId(self):
-		if self.id == None:
-			return ''
-		return str(self.id)	# cast to string, just in case.
-	
-	
-	# returns a list with the lines of the verse
-	def getVerse(self):
-		verse = []
-		
-		# a later pāda will only be valid if an earlier one is non-empty
-		if self.pada_a != None:
-			verse.append(self.pada_a)
-			if self.pada_b != None:
-				verse.append(self.pada_b)
-				if self.pada_c != None:
-					verse.append(self.pada_c)
-					if self.pada_d != None:
-						verse.append(self.pada_d)
-		return verse
-	
-	def getVerseString(self):
-		verse_string = self.getId() + '\n'
-		verse_string += self.getPadaString(Verse.A) + '\n'
-		verse_string += self.getPadaString(Verse.B) + '\n'
-		verse_string += self.getPadaString(Verse.C) + '\n'
-		verse_string += self.getPadaString(Verse.D) + '\n'
-		return verse_string
-	
-	
-	def getPada(self, pada_name):
-		pada = None
-		if pada_name == self.A:
-			pada = self.pada_a
-		elif pada_name == self.B:
-			pada = self.pada_b
-		elif pada_name == self.C:
-			pada = self.pada_c
-		elif pada_name == self.D:
-			pada = self.pada_d
-		else:
-			# we have a problem
-			raise ValueError('No verse quarter \'' + str(pada_name) + '\'.')
-		
-		if pada == None:
-			raise ValueError('Verse quarter \'' + str(pada_name) + '\' empty.')
-			
-		return pada
-	
-	def getPadaString(self, pada_name):
-		pada = self.getPada(pada_name)
-		
-		# now make a string from the list of syllables
-		pada_string = ''
-		for syllable in pada:
-			pada_string += syllable
-		
-		return pada_string
-	
-	
-	# alias of getPada()
-	def getQuarter(self, quarter):
-		return self.getPada(quarter)
-	def getQuarterString(self, quarter):
-		return self.getPadaString(quarter)
-	
+	def __len__(self):
+		return len(self._syllables)
 	
 	""" implement Iterator """
 	def __iter__(self):
@@ -138,27 +52,90 @@ class Verse:
 
 	
 	def next(self):
-		if self.current == 4:		# there can only be four quarters
-			self.current = 0			# reset so we can iterate multiple times if need be
+		self._current += 1
+		if self._current == len(self._syllables):
+			self._current = -1		# reset so we can iterate multiple times if need be
 			raise StopIteration
 		else:
-			pada = None
-			if self.current == 0:
-				pada = self.getPada(Verse.A)
-			elif self.current == 1:
-				pada = self.getPada(Verse.B)
-			elif self.current == 2:
-				pada = self.getPada(Verse.C)
-			elif self.current == 3:
-				pada = self.getPada(Verse.D)
-			self.current += 1
-            
-			return pada
+			return self._syllables[self._current]
+# End Pada class
+
+
+"""
+Verse Class
+Refactored version of a class to hold a Sanskrit verse.
+- Extended handling of the verse quarters to be able to deal with verses that don't have four quarters.
+"""
+class Verse:
+	_id = None				# Verse id as <string>
+	_text = None			# Text identifier as <string>
+	_padas = None		# Verse quarters as <list>
+	_current = None	# Counter for Iterator implementation
+	
+	def __init__(self, verse_id, padas=[]):
+		self._id = verse_id
+		self._current = -1	# this will increment to 0 in the first iteration of next()
+		
+		# deep copy the quarters, so they are immutable from outside
+		# the input can be a list of either lists of syllables, or of strings
+		self._padas = []
+		for pada in padas:
+			if isinstance(pada, Pada):
+				self._padas.append(pada)
+			elif isinstance(pada, UnicodeType):
+				self._padas.append(Pada(pada))
+			else:
+				raise ValueError('Padas should be strings or Padas: ' + str(type(pada)))
+	
+	def __str__(self):
+		return unicode(self).encode('utf-8')
+	
+	def __unicode__(self):
+		# first build a string
+		string = u''
+		if  not isinstance(self._id, NoneType):
+			string += self._id
+		string += u'\n'
+		for pada in self._padas:
+			string += unicode(pada)
+			string += u'\n'
+			
+		return string
+	
+	def __len__(self):
+		return len(self._padas)
+	
+	""" implement Iterator """
+	def __iter__(self):
+		return self
+
+	
+	def next(self):
+		self._current += 1
+		if self._current == len(self._padas):
+			self._current = -1		# reset so we can iterate multiple times if need be
+			raise StopIteration
+		else:
+			return self._padas[self._current]
+	
+	def get_id(self):
+		return self._id
+		
+	def get_padas(self):
+		return self._padas
+	
+	def get_pada_len(self):
+		if len(self._padas) != 0:
+			return len(self._padas[0])
+		else:
+			return 0
+#End Verse class
+
 	
 
 
 # returns any numbers, perhaps separated by a period.
-def getIdentifier(line, identifier):
+def _get_identifier(line, identifier):
 	numbers = re.search('[\d]+\.[\d]+', line)
 	if numbers != None:
 		if identifier == None:
@@ -171,7 +148,7 @@ def getIdentifier(line, identifier):
 
 
 # This function assumes that a valid Sanskrit line will have either a '|' or '/' at the end of it
-def isSanskritLine(line):
+def _is_sanskrit_line(line):
 	delim = re.search('[\|\/]', line)
 	
 	# however, many files, especially from GRETIL, have a url in the preface
@@ -185,7 +162,7 @@ def isSanskritLine(line):
 
 
 # returns any non-digits that are not '|' or '/'
-def getText(line):
+def _get_text(line):
 	letters = re.match('[^\d\|\/]*', line)
 	
 	if letters != None:
@@ -197,53 +174,74 @@ def getText(line):
 # Expects a file opened as a Unicode stream
 # Verses are taken to be two lines long, with verses separated by spaces
 # Return:	Verse object
-def parseVerse(file):
+def parse_verse(file):
 	identifier = None
-	pada_ab = None
-	pada_cd = None
+	lines = []
 	
 	try:
 		for line in file:
 			line = line.replace(' ', '')
-
-			if line != None and len(line) != 0:
-				# at this point I am going to assume that a Sanskrit line will have a '|' or '/'
-				# the problem is arbitrary information before the actual text begins in an etext
-				if isSanskritLine(line):
-					identifier = getIdentifier(line, identifier)		# get any numbers in the line
+			line = line.strip()
+			
+			if len(line) != 0:
+				if _is_sanskrit_line(line):
+					identifier = _get_identifier(line, identifier)		# get any numbers in the line
 					
-					text = getText(line) 		# get any text in the line
+					text = _get_text(line)
 					if text != None:
-						if pada_ab == None:
-							pada_ab = text
-						elif pada_cd == None:
-							pada_cd = text
-						else:
-							# oops. The line is not empty but we have two lines already
-							# we need to adjust in order to account for multi-line verses
-							if len(text) != 0:
-								print 'Verse too long: (', identifier, ') ', text
-								print '      Pāda ab: ', pada_ab
-								print '      Pāda cd: ', pada_cd
-							break
-
-			# if we get here an everything is full, we have a verse!
-			if pada_ab != None and pada_cd != None:
-				break
+						lines.append(text)
+				else:
+					# this is not a Sanskrit line
+					continue
+			else:
+				# this line is empty
+				# if we have anything, then return, otherwise continue
+				if len(lines) != 0:
+					break
+				else:
+					continue
 		
-		# if we get here and everything is empty still, we're done.	
-		if pada_ab == None and pada_cd == None:
+		# if there are no lines to report, raise exception to end
+		if len(lines) == 0:
 			raise StopIteration('End')
 		
-		print 'ab: ', pada_ab
-		print 'cd: ', pada_cd
+		# at this point we have the lines of text in 'lines'
+		lines_syl = []
+		for line in lines:
+			lines_syl.append(parseSyllables(line))
 		
-		# now assemble the result and pass it back
-		return  Verse(identifier, pada_ab, pada_cd)
+		# if there are only two, at this point assume that they are verse halves that need to be split
+		padas = []
+		for line in lines_syl:
+			padas.append(Pada(line[0:len(line) / 2]))
+			padas.append(Pada(line[len(line) / 2:len(line)]))
+		return Verse(identifier, padas)
 	except IOError, io:
 		print 'IOError reading file', io
 		sys.exit(1)
+		
 
 
 
+# unit test
+if __name__ == '__main__':
+	pada_string = u'athāgre hasatā sācisthitena sthirakīrtinā'
+	pada_string2 = u'senānyā te jagadire kiṃcidāyastacetasā'
+	pada = Pada(pada_string)
+	
+	verse = Verse('2', [pada, pada_string2])
+	print verse.get_id()
+	for pada in verse:
+		print pada
+	
+	verse2 = Verse('3', [pada_string2])
+	print verse2
+	
+	try:
+		print 'Testing verse parsing'
+		file = codecs.open('./data/niyama_test.txt', encoding='utf-8')
+		print parse_verse(file)
+	except IOError, io:
+		print 'There was an error reading file: ' + str(io)
+		sys.exit(1)
 
