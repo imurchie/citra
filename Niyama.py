@@ -16,7 +16,7 @@ def getConsonants(line):
 	consonants = []
 	for syllable in line:
 		for i in xrange(len(syllable)):
-			letter = line[i]
+			letter = syllable[i]
 		
 			# only unique non-vowels and non-visarga/anusvāra
 			if (not isVowel(letter)) and (not isVisarga(letter)) and (not isAnusvara(letter)) and (not letter in consonants):

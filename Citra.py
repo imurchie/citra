@@ -23,7 +23,7 @@ FIGURES = ['gomūtrikā', 'padma', 'sarvatobhadra', 'niyama']
 
 
 def logWrite(log, verse):
-	log.write(verse.getVerseString())
+	log.write(unicode(verse))
 	
 
 def processRequest(figure, filename):
@@ -57,7 +57,7 @@ def processRequest(figure, filename):
 			count_figure = 0
 			count_verse = 0
 			while file:
-				verse = VerseTools.parseVerse(file)
+				verse = VerseTools.parse_verse(file)
 				count_verse += 1
 				logWrite(log, verse)
 				

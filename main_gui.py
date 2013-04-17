@@ -39,17 +39,7 @@ def search():
     # what we want to do is run the appropriate function to search for the verse
     verses = Citra.processRequest(figure.get(), filename_box.get())
     for verse in verses:
-    	search_text.insert(END, verse.getVerseString())
-    	#search_text.insert(END, verse.getId())
-    	#search_text.insert(END, '\n')
-    	#search_text.insert(END, verse.getPadaString(Verse.A))
-    	#search_text.insert(END, '\n')
-    	#search_text.insert(END, verse.getPadaString(Verse.B))
-    	#search_text.insert(END, '\n')
-    	#search_text.insert(END, verse.getPadaString(Verse.C))
-    	#search_text.insert(END, '\n')
-    	#search_text.insert(END, verse.getPadaString(Verse.D))
-    	#search_text.insert(END, '\n')
+    	search_text.insert(END, str(verse))
 
 
 
