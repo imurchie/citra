@@ -15,50 +15,50 @@ from VerseTools import Verse
 # text box that is read-only
 # taken from http://tkinter.unpythonic.net/wiki/ReadOnlyText
 class ReadOnlyText(Text):
-     def __init__(self, *args, **kwargs):
-         Text.__init__(self, *args, **kwargs)
-         self.redirector = WidgetRedirector(self)
-         self.insert = self.redirector.register("insert", lambda *args, **kw: "break")
-         self.delete = self.redirector.register("delete", lambda *args, **kw: "break")
+  def __init__(self, *args, **kwargs):
+     Text.__init__(self, *args, **kwargs)
+     self.redirector = WidgetRedirector(self)
+     self.insert = self.redirector.register("insert", lambda *args, **kw: "break")
+     self.delete = self.redirector.register("delete", lambda *args, **kw: "break")
 
 
 
 # called when the user presses the "Search" button
 def search():
-    if figure == None or len(figure.get()) == 0:
-    	tkMessageBox.showwarning('Error', 'No figure selected')
-    	return
-    elif filename_box == None or len(filename_box.get()) == 0:
-    	tkMessageBox.showwarning('Error', 'No file selected')
-    	return
-    
-    # now we have a figure and a filename
-    #if search_text.get(END) != None and search_text.get(END) != '':
-	search_text.delete("1.0", END)
-    
-    # what we want to do is run the appropriate function to search for the verse
-    verses = Citra.processRequest(figure.get(), filename_box.get())
-    for verse in verses:
-    	search_text.insert(END, str(verse))
+  if figure == None or len(figure.get()) == 0:
+    tkMessageBox.showwarning('Error', 'No figure selected')
+    return
+  elif filename_box == None or len(filename_box.get()) == 0:
+    tkMessageBox.showwarning('Error', 'No file selected')
+    return
+
+  # now we have a figure and a filename
+  #if search_text.get(END) != None and search_text.get(END) != '':
+  search_text.delete("1.0", END)
+
+  # what we want to do is run the appropriate function to search for the verse
+  verses = Citra.processRequest(figure.get(), filename_box.get())
+  for verse in verses:
+    search_text.insert(END, str(verse))
 
 
 
 def loadFile():
-	fname = askopenfilename(filetypes=(("Text Files", "*.txt"), ("All files", "*.*")) )
-	if fname:
-		try:
-			print('File chosen: ' + fname)
-		except:                     # <- naked except is a bad idea
-			showerror("Open Source File", "Failed to read file\n'%s'" % fname)
-	
-	# put the filename into the textbox
-	# focus on filename, not path
-	filename_box.delete(0, END)
-	filename_box.insert(0, fname)
-	filename_box.xview(END)
-	
-	# enable the search button
-	search_button.config(state = ACTIVE)
+  fname = askopenfilename(filetypes=(("Text Files", "*.txt"), ("All files", "*.*")) )
+  if fname:
+    try:
+      print('File chosen: ' + fname)
+    except:                     # <- naked except is a bad idea
+      showerror("Open Source File", "Failed to read file\n'%s'" % fname)
+
+  # put the filename into the textbox
+  # focus on filename, not path
+  filename_box.delete(0, END)
+  filename_box.insert(0, fname)
+  filename_box.xview(END)
+
+  # enable the search button
+  search_button.config(state = ACTIVE)
 
 
 

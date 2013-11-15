@@ -6,7 +6,7 @@
 
 
 # input: File object
-# output: 
+# output:
 def identifyCakra(file):
-	for line in file:
-		print line
+  for line in file:
+    print line

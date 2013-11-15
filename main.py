@@ -3,7 +3,7 @@
 
 
 # script for identifying possible citra figures in text files of Sanskrit works
-# 
+#
 
 import sys
 import codecs
