@@ -26,7 +26,7 @@ def isVisarga(letter):
 
 def isAnusvara(letter):
 	return letter == u'ṃ' or letter == u'ṁ'
-	
+
 
 # this will be abstracted out to use for all the figures.
 # a syllable in this context:
@@ -38,12 +38,12 @@ def isAnusvara(letter):
 # output: 	tuple (syllable, remainder of line)
 def getNextSyllable(line):
 	syllable = ''	# we will fill this with the syllable
-	
+
 	# loop through the line until a syllable is found
 	vowel = False	# not yet found a vowel
 	while len(line) > 0:
 		letter = line[0]
-		
+
 		if letter == ' ':
 			# do nothing
 			letter = ' '
@@ -64,13 +64,13 @@ def getNextSyllable(line):
 				line = line[1:len(line)]
 			#else:
 			break
-		
+
 		# take the letter off the line, as it is in the syllable
 		line = line[1:len(line)]
-	
+
 	# make and return the requisite tuple
 	return (syllable, line)
-	
+
 
 
 # parses a line into its syllables
@@ -78,14 +78,14 @@ def getNextSyllable(line):
 # output:	syllables as list
 def parseSyllables(line):
 	syllables = []
-	
+
 	# for now we're just stripping off the daṇḍas
 	line = line.rstrip('|')
-	
+
 	while len(line) > 0:
 		temp = getNextSyllable(line)
 		syllable = temp[0]
 		line = temp[1]
 		syllables.append(syllable)
-	
+
 	return syllables
